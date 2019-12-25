@@ -1,6 +1,8 @@
 <?php
 
-    defined('BASE') || define('BASE', __DIR__);
+	if(!class_exists("JamesFactory"))
+		require_once BASE . DS . 'libraries' . DS . 'self' . DS . 'JamesFactory.php';
+
     use jamesiarmes\PhpEws\ArrayType\ArrayOfRecipientsType;
     use jamesiarmes\PhpEws\ArrayType\NonEmptyArrayOfAllItemsType;
     use jamesiarmes\PhpEws\Client;
@@ -13,39 +15,41 @@
     use jamesiarmes\PhpEws\Type\EmailAddressType;
     use jamesiarmes\PhpEws\Type\MessageType;
     use jamesiarmes\PhpEws\Type\SingleRecipientType;
-    
- spl_autoload_register(function ($class) {
-     $exp = explode("\\", $class);
-     $class = end($exp);
-     if(file_exists(BASE ."/" . $class . ".php")) {
-         require_once BASE . "/" . $class . ".php";
-     }
-     elseif (file_exists(BASE . "/ArrayType/" . $class . ".php")) {
-         require_once BASE . "/ArrayType/" . $class . ".php";
-     }
-     elseif (file_exists(BASE . "/Enumeration/" . $class . ".php")) {
-         require_once BASE . "/Enumeration/" . $class . ".php";
-     }
-     elseif (file_exists(BASE . "/Request/" . $class . ".php")) {
-         require_once BASE . "/Request/" . $class . ".php";
-     }
-     elseif (file_exists(BASE . "/Response/" . $class . ".php")) {
-         require_once BASE . "/Response/" . $class . ".php";
-     }
-     elseif (file_exists(BASE . "/Type/" . $class . ".php")) {
-         require_once BASE . "/Type/" . $class . ".php";
-     }
-     else {
-         return null;
-     }
+
+    spl_autoload_register(function ($class) {
+    	$dir = __DIR__;
+    	$exp = explode("\\", $class);
+    	$class = end($exp);
+        if(file_exists($dir ."/" . $class . ".php")) {
+            require_once $dir. "/" . $class . ".php";
+        }
+        elseif (file_exists($dir . "/ArrayType/" . $class . ".php")) {
+            require_once $dir . "/ArrayType/" . $class . ".php";
+        }
+        elseif (file_exists($dir . "/Enumeration/" . $class . ".php")) {
+            require_once $dir . "/Enumeration/" . $class . ".php";
+        }
+        elseif (file_exists($dir . "/Request/" . $class . ".php")) {
+            require_once $dir . "/Request/" . $class . ".php";
+        }
+        elseif (file_exists($dir . "/Response/" . $class . ".php")) {
+            require_once $dir . "/Response/" . $class . ".php";
+        }
+        elseif (file_exists($dir . "/Type/" . $class . ".php")) {
+            require_once $dir . "/Type/" . $class . ".php";
+        }
+        else {
+            return null;
+        }
  });
  
 
      class ExchangeMaster {
-         private $mailServer = "change me";
-         private $fromUsername = "change me";
-         private $fromPassword = "change me";
-         protected $temp_dir = 'path/to/temp/directory/for/attachments';
+         public $mailServer = "change me";
+         public $fromUsername = "change me";
+         public $fromPassword = "change me";
+         public $temp_dir = 'path/to/temp/directory/for/attachments';
+         public $client_version = null;
          protected $theClient = null;
 
 
@@ -56,8 +60,27 @@
                 $this->fromUsername = $username;
                 $this->fromPassword = $password;
             }
-            $this->theClient = new Client($this->mailServer, $this->fromUsername, $this->fromPassword, Client::VERSION_2007);
-            $this->theClient->setTimezone('Eastern Standard Time');
-            $this->theClient->setCurlOptions(array(CURLOPT_SSL_VERIFYPEER => false, CURLOPT_SSL_VERIFYHOST => false));
+
+            if(!$this->client_version) {
+            	$this->client_version = Client::VERSION_2007;
+            }
+
          }
+
+         public function connect(): void
+         {
+         	if(!$this->theClient)
+            {
+	            $this->theClient = new Client($this->mailServer, $this->fromUsername, $this->fromPassword, $this->client_version);
+	            $this->theClient->setTimezone('Eastern Standard Time');
+	            $this->theClient->setCurlOptions(array(CURLOPT_SSL_VERIFYPEER => false, CURLOPT_SSL_VERIFYHOST => false));
+            }
+
+         }
+
+         public function getConnection()
+         {
+         	return $this->theClient;
+         }
+
      }

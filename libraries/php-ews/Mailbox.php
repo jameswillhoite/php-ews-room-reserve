@@ -87,6 +87,9 @@
          * @throws Exception
          */
         public function getMailbox() {
+        	if(!$this->theClient)
+        		$this->connect();
+
             $request = new FindItemType();
             $request->ParentFolderIds = new NonEmptyArrayOfBaseFolderIdsType();
             $request->Traversal = \jamesiarmes\PhpEws\Enumeration\ItemQueryTraversalType::SHALLOW;
@@ -225,6 +228,9 @@
             if(count($message->attachment_ids) == 0) {
                 return;
             }
+
+            $this->connect();
+
             // Build the request to get the attachments.
             $request = new GetAttachmentType();
             $request->AttachmentIds = new NonEmptyArrayOfRequestAttachmentIdsType();
@@ -266,6 +272,8 @@
             //Check to see if the message is already marked as read
             if($message->isRead())
                 return;
+
+            $this->connect();
             
             $request = new \jamesiarmes\PhpEws\Request\UpdateItemType();
             $request->MessageDisposition = 'SaveOnly';
@@ -300,6 +308,9 @@
          * @throws Exception
          */
         public function deleteEmail(ExchangeMessage $message) {
+
+        	$this->connect();
+
             $request = new \jamesiarmes\PhpEws\Request\DeleteItemType();
             $request->ItemIds = new NonEmptyArrayOfBaseItemIdsType();
             $request->ItemIds->ItemId[] = new ItemIdType();
@@ -329,6 +340,8 @@
          */
         public function sendMessage(ExchangeMessage $Message)
         {
+        	$this->connect();
+
             //Build the request
             $request = new CreateItemType();
             $request->Items = new NonEmptyArrayOfAllItemsType();
