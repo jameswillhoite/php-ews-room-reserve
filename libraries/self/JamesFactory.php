@@ -1,8 +1,7 @@
 <?php
 
-
+	defined("DS") || define("DS", DIRECTORY_SEPARATOR);
 	defined("BASE") || define("BASE", __DIR__ . DS . '..' . DS . '..');
-
 	if(!class_exists("Configuration"))
 		require_once BASE . DS . 'Configuration.php';
 
@@ -55,5 +54,13 @@
 			}
 
 			return self::$php_ews;
+		}
+
+		public static function getPayloadInstance(): Payload
+		{
+			if(!class_exists("Payload"))
+				require_once BASE . DS . 'libraries' . DS . 'self' . DS . 'Payload.php';
+
+			return new Payload();
 		}
 	}

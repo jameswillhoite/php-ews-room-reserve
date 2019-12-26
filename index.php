@@ -1,3 +1,12 @@
+<?php
+    if(!class_exists("JamesFactory"))
+    	require_once __DIR__ . '/libraries/self/JamesFactory.php';
+    if(!class_exists("Model"))
+    	require_once BASE . DS . 'Model.php';
+
+    $model = new Model();
+    echo print_r($model->getCalendar()->data, true);
+	?>
 <!doctype html>
 <html lang="en">
 <head>

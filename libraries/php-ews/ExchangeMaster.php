@@ -78,6 +78,9 @@
 
          }
 
+	     /**
+	      * @return Client
+	      */
          public function getConnection()
          {
          	return $this->theClient;

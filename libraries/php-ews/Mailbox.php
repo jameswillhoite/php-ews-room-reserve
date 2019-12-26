@@ -47,12 +47,12 @@
         /**
          * @var DateTime $start_date
          */
-        private $start_date = null;
+        public $start_date = null;
     
         /**
          * @var DateTime $stop_date
          */
-        private $stop_date = null;
+        public $stop_date = null;
     
         /**
          * @var bool
